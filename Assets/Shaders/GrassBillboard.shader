@@ -5,6 +5,10 @@ Shader "Custom/GrassBillboard"
         _MainTex ("Grass Texture", 2D) = "white" {}
         _Cutoff ("Alpha Cutoff", Range(0,1)) = 0.5
         _Color ("Tint Color", Color) = (1,1,1,1)
+        _WindDirection ("Wind Direction", Vector) = (1,0,0,0)
+        _WindStrength ("Wind Strength", Float) = 0.5
+        _WindSpeed ("Wind Speed", Float) = 1.0
+        _WindScaleInfluence ("Wind Scale Influence", Float) = 1.0
     }
     
     SubShader
@@ -46,6 +50,10 @@ Shader "Custom/GrassBillboard"
             float4 _MainTex_ST;
             fixed4 _Color;
             fixed _Cutoff;
+            float2 _WindDirection;
+            float _WindStrength;
+            float _WindSpeed;
+            float _WindScaleInfluence;
 
             v2f vert (appdata v)
             {
@@ -64,7 +72,20 @@ Shader "Custom/GrassBillboard"
                     v.vertex.x * sinR + v.vertex.z * cosR
                 ) * scale;
                 
-                float3 finalWorldPos = worldPos + rotatedVertex;
+                float windPhase = _Time.y * _WindSpeed + worldPos.x * 0.1 + worldPos.z * 0.1;
+                float windWave = sin(windPhase);
+                
+                float windInfluence = v.uv.y;
+                
+                float scaleInfluence = lerp(1.0, grassData.scale, _WindScaleInfluence);
+                
+                float3 windOffset = float3(
+                    _WindDirection.x * windWave * _WindStrength * windInfluence * scaleInfluence,
+                    0,
+                    _WindDirection.y * windWave * _WindStrength * windInfluence * scaleInfluence
+                );
+                
+                float3 finalWorldPos = worldPos + rotatedVertex + windOffset;
                 
                 o.vertex = mul(UNITY_MATRIX_VP, float4(finalWorldPos, 1.0));
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);

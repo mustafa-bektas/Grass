@@ -16,6 +16,13 @@ public class ComputeGrassManager : MonoBehaviour
     public float minHeightScale = 0.5f;
     public float maxHeightScale = 1.5f;
     
+    [Header("Wind Settings")]
+    public Vector2 windDirection = new Vector2(1, 0);
+    public float windStrength = 0.5f;
+    public float windSpeed = 1.0f;
+    [Range(0, 2)]
+    public float windScaleInfluence = 1.0f;
+    
     [Header("Runtime")]
     public bool regenerateOnStart = true;
     
@@ -103,9 +110,13 @@ public class ComputeGrassManager : MonoBehaviour
     {
         if (grassMesh != null && grassMaterial != null && grassBuffer != null && argsBuffer != null)
         {
-            // Set the grass data buffer to the material
             grassMaterial.SetBuffer("_GrassBuffer", grassBuffer);
             grassMaterial.SetVector("_ManagerPosition", transform.position);
+            
+            grassMaterial.SetVector("_WindDirection", windDirection.normalized);
+            grassMaterial.SetFloat("_WindStrength", windStrength);
+            grassMaterial.SetFloat("_WindSpeed", windSpeed);
+            grassMaterial.SetFloat("_WindScaleInfluence", windScaleInfluence);
             
             Graphics.DrawMeshInstancedIndirect(grassMesh, 0, grassMaterial, new Bounds(transform.position, Vector3.one * 1000), argsBuffer);
         }

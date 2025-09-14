@@ -154,9 +154,13 @@ MonoBehaviour:
   areaSize: {x: 300, y: 300}
   grassCount: 1000000
   randomSeed: 1
-  heightVariationFrequency: 0.45
+  heightVariationFrequency: 0.7
   minHeightScale: 0.5
-  maxHeightScale: 2.5
+  maxHeightScale: 1.5
+  windDirection: {x: 1, y: 0}
+  windStrength: 0.5
+  windSpeed: 1
+  windScaleInfluence: 1
   regenerateOnStart: 1
 --- !u!4 &140395317
 Transform:
@@ -355,13 +359,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.44, z: -10}
+  m_LocalRotation: {x: -0, y: -0.2145162, z: -0, w: 0.9767205}
+  m_LocalPosition: {x: 3.97, y: 2.33, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -24.774, z: 0}
 --- !u!1001 &1567061202
 PrefabInstance:
   m_ObjectHideFlags: 0
