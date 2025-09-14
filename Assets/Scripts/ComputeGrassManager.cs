@@ -11,6 +11,11 @@ public class ComputeGrassManager : MonoBehaviour
     public int grassCount = 10000;
     public float randomSeed = 1.0f;
     
+    [Header("Height Variation")]
+    public float heightVariationFrequency = 0.2f;
+    public float minHeightScale = 0.5f;
+    public float maxHeightScale = 1.5f;
+    
     [Header("Runtime")]
     public bool regenerateOnStart = true;
     
@@ -63,6 +68,9 @@ public class ComputeGrassManager : MonoBehaviour
         grassComputeShader.SetVector("areaSize", areaSize);
         grassComputeShader.SetInt("grassCount", grassCount);
         grassComputeShader.SetFloat("seed", randomSeed);
+        grassComputeShader.SetFloat("heightVariationFrequency", heightVariationFrequency);
+        grassComputeShader.SetFloat("minHeightScale", minHeightScale);
+        grassComputeShader.SetFloat("maxHeightScale", maxHeightScale);
         
         int totalThreadsNeeded = Mathf.CeilToInt(grassCount / 64.0f) * 64;
         int threadsPerRow = 65536; // Max threads per dimension

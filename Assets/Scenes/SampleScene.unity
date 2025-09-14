@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 140395317}
   - component: {fileID: 140395316}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: GrassManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -152,8 +152,11 @@ MonoBehaviour:
   grassComputeShader: {fileID: 7200000, guid: 5a04743bb21dd5c44ba469a66cd60655, type: 3}
   grassMaterial: {fileID: 2100000, guid: d4524a29fee0e674fbd2548b0b195d9d, type: 2}
   areaSize: {x: 300, y: 300}
-  grassCount: 100000
+  grassCount: 1000000
   randomSeed: 1
+  heightVariationFrequency: 0.45
+  minHeightScale: 0.5
+  maxHeightScale: 2.5
   regenerateOnStart: 1
 --- !u!4 &140395317
 Transform:
