@@ -7,6 +7,7 @@ public class ComputeGrassManager : MonoBehaviour
     public GameObject grassPrefab;
     public ComputeShader grassComputeShader;
     public Material grassMaterial;
+    public GameObject terrain;
     public Vector2 areaSize = new Vector2(50, 50);
     public int grassCount = 10000;
     public float randomSeed = 1.0f;
@@ -78,6 +79,22 @@ public class ComputeGrassManager : MonoBehaviour
         grassComputeShader.SetFloat("heightVariationFrequency", heightVariationFrequency);
         grassComputeShader.SetFloat("minHeightScale", minHeightScale);
         grassComputeShader.SetFloat("maxHeightScale", maxHeightScale);
+
+        if (terrain != null)
+        {
+            Renderer terrainRenderer = terrain.GetComponent<Renderer>();
+            if (terrainRenderer != null)
+            {
+                Material terrainMaterial = terrainRenderer.sharedMaterial;
+                if (terrainMaterial.HasProperty("_HeightMap") && terrainMaterial.HasProperty("_DisplacementStrength"))
+                {
+                    grassComputeShader.SetTexture(0, "_HeightMap", terrainMaterial.GetTexture("_HeightMap"));
+                    grassComputeShader.SetFloat("_DisplacementStrength", terrainMaterial.GetFloat("_DisplacementStrength"));
+                    grassComputeShader.SetVector("_TerrainPosition", terrain.transform.position);
+                    grassComputeShader.SetVector("_TerrainSize", terrain.GetComponent<MeshFilter>().sharedMesh.bounds.size * terrain.transform.localScale.x);
+                }
+            }
+        }
         
         int totalThreadsNeeded = Mathf.CeilToInt(grassCount / 64.0f) * 64;
         int threadsPerRow = 65536; // Max threads per dimension
