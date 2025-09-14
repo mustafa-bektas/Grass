@@ -1,10 +1,12 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class ComputeGrassManager : MonoBehaviour
 {
     [Header("Grass Settings")]
     public GameObject grassPrefab;
     public ComputeShader grassComputeShader;
+    public Material grassMaterial;
     public Vector2 areaSize = new Vector2(50, 50);
     public int grassCount = 10000;
     public float randomSeed = 1.0f;
@@ -13,8 +15,9 @@ public class ComputeGrassManager : MonoBehaviour
     public bool regenerateOnStart = true;
     
     private ComputeBuffer grassBuffer;
-    private GrassData[] grassDataArray;
-    private GameObject[] grassInstances;
+    private ComputeBuffer argsBuffer;
+    private Mesh grassMesh;
+    private uint[] args = new uint[5] { 0, 0, 0, 0, 0 };
     
     [System.Serializable]
     public struct GrassData
@@ -36,59 +39,82 @@ public class ComputeGrassManager : MonoBehaviour
     {
         ClearGrass();
         
+        if (grassMaterial != null)
+        {
+            if (grassMaterial.shader.name != "Custom/GrassBillboard")
+            {
+                return;
+            }
+        }
+        
+        // Get mesh from grass prefab
+        if (grassPrefab != null)
+        {
+            MeshFilter meshFilter = grassPrefab.GetComponent<MeshFilter>();
+            if (meshFilter != null)
+            {
+                grassMesh = meshFilter.sharedMesh;
+            }
+        }
+        
         grassBuffer = new ComputeBuffer(grassCount, sizeof(float) * 5); // 3 for pos, 1 scale, 1 rot
-        grassDataArray = new GrassData[grassCount];
         
         grassComputeShader.SetBuffer(0, "grassBuffer", grassBuffer);
         grassComputeShader.SetVector("areaSize", areaSize);
         grassComputeShader.SetInt("grassCount", grassCount);
         grassComputeShader.SetFloat("seed", randomSeed);
         
-        int threadGroups = Mathf.CeilToInt(grassCount / 64.0f);
-        grassComputeShader.Dispatch(0, threadGroups, 1, 1);
+        int totalThreadsNeeded = Mathf.CeilToInt(grassCount / 64.0f) * 64;
+        int threadsPerRow = 65536; // Max threads per dimension
+        int threadGroupsX = Mathf.CeilToInt(Mathf.Min(totalThreadsNeeded, threadsPerRow) / 8.0f);
+        int threadGroupsY = Mathf.CeilToInt(totalThreadsNeeded / (float)(threadGroupsX * 8) / 8.0f);
         
-        grassBuffer.GetData(grassDataArray);
+        threadGroupsX = Mathf.Min(threadGroupsX, 65535);
+        threadGroupsY = Mathf.Min(threadGroupsY, 65535);
         
-        CreateGrassInstances();
+        grassComputeShader.Dispatch(0, threadGroupsX, threadGroupsY, 1);
         
-        grassBuffer.Release();
+        SetupIndirectArgs();
     }
     
-    void CreateGrassInstances()
+    void SetupIndirectArgs()
     {
-        grassInstances = new GameObject[grassCount];
-        
-        for (int i = 0; i < grassCount; i++)
+        if (grassMesh != null)
         {
-            GrassData data = grassDataArray[i];
+            args[0] = (uint)grassMesh.GetIndexCount(0);
+            args[1] = (uint)grassCount;
+            args[2] = (uint)grassMesh.GetIndexStart(0);
+            args[3] = (uint)grassMesh.GetBaseVertex(0);
+        }
+        
+        argsBuffer = new ComputeBuffer(1, args.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
+        argsBuffer.SetData(args);
+    }
+    
+    void Update()
+    {
+        if (grassMesh != null && grassMaterial != null && grassBuffer != null && argsBuffer != null)
+        {
+            // Set the grass data buffer to the material
+            grassMaterial.SetBuffer("_GrassBuffer", grassBuffer);
+            grassMaterial.SetVector("_ManagerPosition", transform.position);
             
-            GameObject grass = Instantiate(grassPrefab, transform);
-            grass.transform.position = transform.position + data.position;
-            grass.transform.rotation = Quaternion.Euler(0, data.rotation * Mathf.Rad2Deg, 0);
-            grass.transform.localScale = Vector3.one * data.scale * 0.5f;
-            
-            grassInstances[i] = grass;
+            Graphics.DrawMeshInstancedIndirect(grassMesh, 0, grassMaterial, new Bounds(transform.position, Vector3.one * 1000), argsBuffer);
         }
     }
     
     public void ClearGrass()
     {
-        if (grassInstances != null)
-        {
-            for (int i = 0; i < grassInstances.Length; i++)
-            {
-                if (grassInstances[i] != null)
-                {
-                    DestroyImmediate(grassInstances[i]);
-                }
-            }
-            grassInstances = null;
-        }
-        
         if (grassBuffer != null)
         {
             grassBuffer.Release();
             grassBuffer = null;
+        }
+        
+        if (argsBuffer != null)
+        {
+            argsBuffer.Release();
+            argsBuffer = null;
         }
     }
     

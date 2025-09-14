@@ -17,12 +17,21 @@ Shader "Custom/GrassBillboard"
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+            #pragma multi_compile_instancing
             #include "UnityCG.cginc"
+
+            struct GrassData
+            {
+                float3 position;
+                float rotation;
+                float scale;
+            };
 
             struct appdata
             {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
+                uint instanceID : SV_InstanceID;
             };
 
             struct v2f
@@ -31,6 +40,8 @@ Shader "Custom/GrassBillboard"
                 float4 vertex : SV_POSITION;
             };
 
+            StructuredBuffer<GrassData> _GrassBuffer;
+            float3 _ManagerPosition;
             sampler2D _MainTex;
             float4 _MainTex_ST;
             fixed4 _Color;
@@ -39,7 +50,23 @@ Shader "Custom/GrassBillboard"
             v2f vert (appdata v)
             {
                 v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
+                
+                GrassData grassData = _GrassBuffer[v.instanceID];
+                
+                float3 worldPos = _ManagerPosition + grassData.position;
+                float cosR = cos(grassData.rotation);
+                float sinR = sin(grassData.rotation);
+                float scale = grassData.scale * 0.5;
+                
+                float3 rotatedVertex = float3(
+                    v.vertex.x * cosR - v.vertex.z * sinR,
+                    v.vertex.y,
+                    v.vertex.x * sinR + v.vertex.z * cosR
+                ) * scale;
+                
+                float3 finalWorldPos = worldPos + rotatedVertex;
+                
+                o.vertex = mul(UNITY_MATRIX_VP, float4(finalWorldPos, 1.0));
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 return o;
             }
