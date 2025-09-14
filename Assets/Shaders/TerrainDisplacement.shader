@@ -84,12 +84,10 @@ Shader "Custom/TerrainDisplacement"
             {
                 fixed4 col = tex2D(_MainTex, i.uv) * _Color;
                 
-                // Sample and unpack normal map
                 float3 normalMap = UnpackNormal(tex2D(_NormalMap, i.uv));
                 normalMap.xy *= _NormalMapStrength;
                 normalMap = normalize(normalMap);
                 
-                // Transform normal from tangent space to world space
                 float3x3 tangentToWorld = float3x3(
                     normalize(i.worldTangent),
                     normalize(i.worldBinormal),

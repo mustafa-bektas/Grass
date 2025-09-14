@@ -1,0 +1,42 @@
+#pragma kernel CSMain
+
+struct GrassData
+{
+    float3 position;
+    float rotation;
+    float scale;
+};
+
+RWStructuredBuffer<GrassData> grassBuffer;
+float2 areaSize;
+int grassCount;
+float seed;
+
+[numthreads(64,1,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= (uint)grassCount) return;
+    
+    int gridWidth = (int)sqrt((float)grassCount);
+    int gridHeight = (grassCount + gridWidth - 1) / float(gridWidth);
+    
+    int x = (int)(id.x % gridWidth);
+    int z = (int)(id.x / gridWidth);
+    
+    float stepX = (gridWidth > 1) ? areaSize.x / (float)(gridWidth - 1) : 0.0;
+    float stepZ = (gridHeight > 1) ? areaSize.y / (float)(gridHeight - 1) : 0.0;
+    
+    float3 position = float3(
+        (gridWidth > 1) ? (x * stepX) - (areaSize.x * 0.5) : 0.0,
+        0,
+        (gridHeight > 1) ? (z * stepZ) - (areaSize.y * 0.5) : 0.0
+    );
+    
+    float rotation = 0.0;
+    
+    float scale = 1.0;
+    
+    grassBuffer[id.x].position = position;
+    grassBuffer[id.x].rotation = rotation;
+    grassBuffer[id.x].scale = scale;
+}
