@@ -6,6 +6,7 @@ struct GrassData
     float3 position;
     float rotation;
     float scale;
+    float yellowness;
 };
 
 RWStructuredBuffer<GrassData> grassBuffer;
@@ -57,11 +58,14 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     float rotation = 0.0;
     
-    // Calculate height variation using noise
     float heightNoise = abs(snoise(float3(position.xz, 0.0f) * heightVariationFrequency));
     float scale = lerp(minHeightScale, maxHeightScale, heightNoise);
+    
+    float yellowness = (scale - minHeightScale) / (maxHeightScale - minHeightScale);
+    yellowness = saturate(yellowness); // Clamp between 0 and 1
     
     grassBuffer[index].position = position;
     grassBuffer[index].rotation = rotation;
     grassBuffer[index].scale = scale;
+    grassBuffer[index].yellowness = yellowness;
 }

@@ -38,6 +38,7 @@ public class ComputeGrassManager : MonoBehaviour
         public Vector3 position;
         public float rotation;
         public float scale;
+        public float yellowness;
     }
     
     void Start()
@@ -70,7 +71,7 @@ public class ComputeGrassManager : MonoBehaviour
             }
         }
         
-        grassBuffer = new ComputeBuffer(grassCount, sizeof(float) * 5); // 3 for pos, 1 scale, 1 rot
+        grassBuffer = new ComputeBuffer(grassCount, sizeof(float) * 6); // 3 for pos, 1 rot, 1 scale, 1 yellowness
         
         grassComputeShader.SetBuffer(0, "grassBuffer", grassBuffer);
         grassComputeShader.SetVector("areaSize", areaSize);

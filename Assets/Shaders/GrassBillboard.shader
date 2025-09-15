@@ -5,6 +5,8 @@ Shader "Custom/GrassBillboard"
         _MainTex ("Grass Texture", 2D) = "white" {}
         _Cutoff ("Alpha Cutoff", Range(0,1)) = 0.5
         _Color ("Tint Color", Color) = (1,1,1,1)
+        _YellowColor ("Yellow Color", Color) = (1,1,0,1)
+        _YellowIntensity ("Yellow Intensity", Range(0,2)) = 1.0
         _WindDirection ("Wind Direction", Vector) = (1,0,0,0)
         _WindStrength ("Wind Strength", Float) = 0.5
         _WindSpeed ("Wind Speed", Float) = 1.0
@@ -29,6 +31,7 @@ Shader "Custom/GrassBillboard"
                 float3 position;
                 float rotation;
                 float scale;
+                float yellowness;
             };
 
             struct appdata
@@ -41,6 +44,9 @@ Shader "Custom/GrassBillboard"
             struct v2f
             {
                 float2 uv : TEXCOORD0;
+                nointerpolation float yellowness : TEXCOORD1;
+                float worldPosY : TEXCOORD2;
+                float grassBaseY : TEXCOORD3;
                 float4 vertex : SV_POSITION;
             };
 
@@ -49,6 +55,8 @@ Shader "Custom/GrassBillboard"
             sampler2D _MainTex;
             float4 _MainTex_ST;
             fixed4 _Color;
+            fixed4 _YellowColor;
+            fixed _YellowIntensity;
             fixed _Cutoff;
             float2 _WindDirection;
             float _WindStrength;
@@ -89,6 +97,9 @@ Shader "Custom/GrassBillboard"
                 
                 o.vertex = mul(UNITY_MATRIX_VP, float4(finalWorldPos, 1.0));
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                o.yellowness = grassData.yellowness;
+                o.worldPosY = finalWorldPos.y;
+                o.grassBaseY = worldPos.y;
                 return o;
             }
 
@@ -96,6 +107,15 @@ Shader "Custom/GrassBillboard"
             {
                 fixed4 col = tex2D(_MainTex, i.uv) * _Color;
                 clip(col.a - _Cutoff);
+                
+                float grassHeight = i.worldPosY - i.grassBaseY;
+                float maxGrassHeight = 3;
+                float verticalInfluence = saturate(grassHeight / maxGrassHeight);
+                
+                float finalYellowness = i.yellowness * verticalInfluence * _YellowIntensity;
+                
+                col.rgb = lerp(col.rgb, _YellowColor.rgb, finalYellowness);
+                
                 return col;
             }
             ENDCG
