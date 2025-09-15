@@ -72,14 +72,14 @@ Material:
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _DisplacementStrength: 1
+    - _DisplacementStrength: 59.6
     - _DstBlend: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 0
-    - _NormalMapStrength: 1
+    - _NormalMapStrength: 1.09
     - _NormalStrength: 1.01
     - _OcclusionStrength: 1
     - _Parallax: 0.02

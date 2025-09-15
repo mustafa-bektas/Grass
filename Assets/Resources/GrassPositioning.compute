@@ -50,10 +50,11 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     float2 uv = (position.xz - _TerrainPosition.xz) / _TerrainSize.xz + 0.5;
     uv.x = 1 - uv.x;
     uv.y = 1 - uv.y;
+
     
     float height = _HeightMap.SampleLevel(sampler_HeightMap, uv, 0).r;
-    position.y += height * _DisplacementStrength + 0.75;
-    
+    position.y += height * _DisplacementStrength + 0.7;  
+
     float rotation = 0.0;
     
     // Calculate height variation using noise

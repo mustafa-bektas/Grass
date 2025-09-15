@@ -151,10 +151,11 @@ MonoBehaviour:
   grassPrefab: {fileID: 5156652066696791889, guid: 1ab2933beb8b4074b9c2375982d9b540, type: 3}
   grassComputeShader: {fileID: 7200000, guid: 5a04743bb21dd5c44ba469a66cd60655, type: 3}
   grassMaterial: {fileID: 2100000, guid: d4524a29fee0e674fbd2548b0b195d9d, type: 2}
+  terrain: {fileID: 1561083207}
   areaSize: {x: 300, y: 300}
   grassCount: 1000000
   randomSeed: 1
-  heightVariationFrequency: 0.7
+  heightVariationFrequency: 0.2
   minHeightScale: 0.5
   maxHeightScale: 1.5
   windDirection: {x: 1, y: 0}
@@ -171,7 +172,7 @@ Transform:
   m_GameObject: {fileID: 140395315}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.41948, y: 0.23919, z: 0.409}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -359,13 +360,18 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.2145162, z: -0, w: 0.9767205}
-  m_LocalPosition: {x: 3.97, y: 2.33, z: -10}
+  m_LocalRotation: {x: -0, y: -0.6321514, z: -0, w: 0.77484494}
+  m_LocalPosition: {x: 12.42, y: 9.61, z: -12.79}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: -24.774, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -78.418, z: 0}
+--- !u!1 &1561083207 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: c9692dfd137a9964395c2324930aa361, type: 3}
+  m_PrefabInstance: {fileID: 1567061202}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1567061202
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -540,7 +546,7 @@ Transform:
   m_GameObject: {fileID: 2004838179}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.119, z: -0.091}
+  m_LocalPosition: {x: 4.44, y: 8.442, z: -10.67}
   m_LocalScale: {x: 1, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

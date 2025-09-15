@@ -5,7 +5,7 @@ Shader "Custom/TerrainDisplacement"
         _MainTex ("Base Texture", 2D) = "white" {}
         _NormalMap ("Normal Map", 2D) = "bump" {}
         _HeightMap ("Height Map", 2D) = "black" {}
-        _DisplacementStrength ("Displacement Strength", Range(1,50)) = 20.0
+        _DisplacementStrength ("Displacement Strength", Range(1,100)) = 50.0
         _Color ("Base Color", Color) = (1,1,1,1)
         _NormalMapStrength ("Normal Map Strength", Range(0.0, 2.0)) = 1.0
     }
@@ -47,7 +47,8 @@ Shader "Custom/TerrainDisplacement"
 
             sampler2D _MainTex;
             sampler2D _NormalMap;
-            sampler2D _HeightMap;
+            Texture2D<float4> _HeightMap;
+            SamplerState sampler_HeightMap;
             float4 _MainTex_ST;
             float _DisplacementStrength;
             float _NormalMapStrength;
@@ -57,7 +58,7 @@ Shader "Custom/TerrainDisplacement"
             {
                 v2f o;
                 
-                float height = tex2Dlod(_HeightMap, float4(v.uv, 0, 0)).r;
+                float height = _HeightMap.SampleLevel(sampler_HeightMap, v.uv, 0).r;
                 
                 float3 worldNormal = UnityObjectToWorldNormal(v.normal);
                 float3 worldTangent = UnityObjectToWorldDir(v.tangent.xyz);
@@ -120,7 +121,8 @@ Shader "Custom/TerrainDisplacement"
             #pragma multi_compile_shadowcaster
             #include "UnityCG.cginc"
 
-            sampler2D _HeightMap;
+            Texture2D<float4> _HeightMap;
+            SamplerState sampler_HeightMap;
             float _DisplacementStrength;
 
             struct appdata
@@ -139,7 +141,7 @@ Shader "Custom/TerrainDisplacement"
             {
                 v2f o;
                 
-                float height = tex2Dlod(_HeightMap, float4(v.uv, 0, 0)).r;
+                float height = _HeightMap.SampleLevel(sampler_HeightMap, v.uv, 0).r;
                 float3 worldNormal = UnityObjectToWorldNormal(v.normal);
                 
                 float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
