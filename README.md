@@ -1,6 +1,6 @@
 # GPU-Instanced Billboard Grass Renderer
 
-![Demo](demo.gif)
+![Demo](demo/demo.gif)
 
 An exploration of billboard grass rendering with GPU instancing. Handles millions of grass instances with no performance issues. This project was a good way to learn the power of GPU parallelization and how modern rendering techniques can push Unity's performance boundaries. 
 
